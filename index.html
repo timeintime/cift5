@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#050105" id="meta-theme-color">
+ 
+    <title>Faruk & Esma - Time in Time</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #ffd700;
+            --secondary-color: #ffea00;
+            --glow-color: rgba(255, 215, 0, 0.4);
+            --bg-color: #050500;
+        }
+ 
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            background-color: var(--bg-color);
+            color: var(--secondary-color);
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.5s ease, color 0.5s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+ 
+        .neon-font {
+            font-family: 'Orbitron', sans-serif;
+        }
+ 
+        .neon-glow-primary {
+            text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color), 0 0 30px var(--secondary-color), 0 0 40px var(--secondary-color);
+        }
+ 
+        .neon-glow-box {
+            box-shadow: 0 0 30px var(--glow-color), inset 0 0 25px rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--secondary-color);
+        }
+
+        .photo-frame {
+            box-shadow: 0 0 20px var(--glow-color);
+            border: 3px solid var(--secondary-color);
+        }
+ 
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            pointer-events: none;
+        }
+ 
+        #floating-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 2;
+            pointer-events: none;
+            overflow: hidden;
+        }
+ 
+        @keyframes floatUp {
+            0% {
+                transform: translateY(105vh) scale(0.6) rotate(0deg);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.9;
+            }
+            80% {
+                opacity: 0.9;
+            }
+            100% {
+                transform: translateY(-10vh) scale(1.3) rotate(360deg);
+                opacity: 0;
+            }
+        }
+ 
+        .floating-item {
+            position: absolute;
+            bottom: -60px;
+            animation: floatUp linear infinite;
+        }
+ 
+        .content-layer {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* WhatsApp Siyah Kalp Emojisi & Kalp Atışı Animasyonu */
+        .whatsapp-black-heart {
+            display: inline-block;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+            animation: heartbeatAnim 1.2s infinite ease-in-out;
+        }
+
+        @keyframes heartbeatAnim {
+            0% { transform: scale(1); }
+            15% { transform: scale(1.25); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.15); }
+            60% { transform: scale(1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-between p-4 md:p-8 select-none">
+ 
+    <canvas id="matrix-canvas"></canvas>
+    <div id="floating-container"></div>
+ 
+    <header class="w-full text-center mt-4 md:mt-8 content-layer">
+        <div id="badge-wrapper" class="inline-block px-4 py-1.5 rounded-full bg-black/60 border backdrop-blur-md mb-3 shadow-lg">
+            <span id="badge-text" class="text-xs md:text-sm tracking-widest uppercase neon-font"></span>
+        </div>
+        <h1 id="names-heading" class="text-3xl sm:text-4xl md:text-7xl font-black tracking-wider neon-font neon-glow-primary mb-2"></h1>
+        <p id="subtitle-text" class="text-xs md:text-base tracking-widest uppercase font-semibold opacity-90"></p>
+    </header>
+ 
+    <main class="w-full max-w-3xl bg-black/70 backdrop-blur-xl rounded-3xl p-5 md:p-10 neon-glow-box content-layer my-6 text-center relative overflow-hidden">
+        
+        <div id="glow-corner-1" class="absolute -top-12 -left-12 w-32 h-32 rounded-full blur-2xl pointer-events-none opacity-40"></div>
+        <div id="glow-corner-2" class="absolute -bottom-12 -right-12 w-32 h-32 rounded-full blur-2xl pointer-events-none opacity-40"></div>
+
+        <!-- ÇİFTİN FOTOĞRAF ALANI -->
+        <div class="flex justify-center mb-6">
+            <div class="relative w-36 h-36 sm:w-48 sm:h-48 rounded-2xl overflow-hidden photo-frame bg-black/40">
+                <img src="cift1.jpg" alt="Faruk & Esma" class="w-full h-full object-cover">
+            </div>
+        </div>
+ 
+        <div class="mb-4 md:mb-6">
+            <!-- WHATSAPP EMOJİSİNDE 2 ADET YAN YANA SİYAH KALP VE ATMA EFEKTİ -->
+            <div class="flex justify-center items-center gap-2 mb-2 text-3xl md:text-4xl">
+                <span class="whatsapp-black-heart">🖤</span>
+                <span class="whatsapp-black-heart" style="animation-delay: 0.2s;">🖤</span>
+            </div>
+            <h2 id="box-title" class="text-lg md:text-2xl font-bold mt-2 neon-font text-white"></h2>
+            <p id="start-date-text" class="text-xs opacity-80 mt-1"></p>
+        </div>
+ 
+        <div class="grid grid-cols-5 gap-1.5 sm:gap-3 my-4 md:my-6">
+            <div class="bg-black/50 border border-white/20 rounded-xl md:rounded-2xl p-2 sm:p-4 backdrop-blur-md shadow-inner flex flex-col justify-center items-center">
+                <span id="years" class="text-lg sm:text-3xl md:text-4xl font-black text-white neon-font neon-glow-primary block">00</span>
+                <span class="text-[9px] sm:text-xs uppercase tracking-wider opacity-80 mt-1 block">Yıl</span>
+            </div>
+            <div class="bg-black/50 border border-white/20 rounded-xl md:rounded-2xl p-2 sm:p-4 backdrop-blur-md shadow-inner flex flex-col justify-center items-center">
+                <span id="months" class="text-lg sm:text-3xl md:text-4xl font-black text-white neon-font neon-glow-primary block">00</span>
+                <span class="text-[9px] sm:text-xs uppercase tracking-wider opacity-80 mt-1 block">Ay</span>
+            </div>
+            <div class="bg-black/50 border border-white/20 rounded-xl md:rounded-2xl p-2 sm:p-4 backdrop-blur-md shadow-inner flex flex-col justify-center items-center">
+                <span id="days" class="text-lg sm:text-3xl md:text-4xl font-black text-white neon-font neon-glow-primary block">00</span>
+                <span class="text-[9px] sm:text-xs uppercase tracking-wider opacity-80 mt-1 block">Gün</span>
+            </div>
+            <div class="bg-black/50 border border-white/20 rounded-xl md:rounded-2xl p-2 sm:p-4 backdrop-blur-md shadow-inner flex flex-col justify-center items-center">
+                <span id="hours" class="text-lg sm:text-3xl md:text-4xl font-black text-white neon-font neon-glow-primary block">00</span>
+                <span class="text-[9px] sm:text-xs uppercase tracking-wider opacity-80 mt-1 block">Saat</span>
+            </div>
+            <div class="bg-black/50 border border-white/20 rounded-xl md:rounded-2xl p-2 sm:p-4 backdrop-blur-md shadow-inner flex flex-col justify-center items-center">
+                <span id="seconds" class="text-lg sm:text-3xl md:text-4xl font-black text-white neon-font neon-glow-primary block">00</span>
+                <span class="text-[9px] sm:text-xs uppercase tracking-wider opacity-80 mt-1 block">Saniye</span>
+            </div>
+        </div>
+ 
+        <div class="mt-6 pt-4 sm:pt-6 border-t border-white/20">
+            <p id="quote-text" class="text-white/90 text-xs sm:text-base md:text-lg italic font-light leading-relaxed px-2 sm:px-4"></p>
+        </div>
+    </main>
+ 
+    <footer class="w-full text-center pb-2 sm:pb-4 content-layer">
+        <p id="footer-text" class="text-[10px] sm:text-xs tracking-widest uppercase opacity-70"></p>
+    </footer>
+ 
+    <script>
+        const CONFIG = {
+            firstName: "FARUK",
+            secondName: "ESMA",
+            theme: "yellow",
+            startDateISO: "1970-10-06T00:00:00",
+            startDateLabel: "Başlangıç: 06 Ekim 1970",
+            badgeText: "NFC Smart Pendant Experience",
+            subtitleText: "Time in Time • Sonsuzluk Döngüsü",
+            boxTitle: "Birlikte Geçen Mucizevi Zaman",
+            quoteText: "Zamanın en güzel akışında, seninle geçen her an bir mucize... İyi ki varsın, iyi ki biz varız.",
+            footerText: "Faruk & Esma • NFC Smart Jewelry Design"
+        };
+ 
+        const THEMES = {
+            pink: { primary: "#ff1493", secondary: "#ff69b4", glow: "rgba(255, 20, 147, 0.4)", bg: "#050105", matrixBg: "rgba(5, 1, 5, 0.15)" },
+            yellow: { primary: "#ffd700", secondary: "#ffea00", glow: "rgba(255, 215, 0, 0.4)", bg: "#050500", matrixBg: "rgba(5, 5, 0, 0.15)" },
+            green: { primary: "#00ff66", secondary: "#55ff99", glow: "rgba(0, 255, 102, 0.4)", bg: "#000502", matrixBg: "rgba(0, 5, 2, 0.15)" },
+            white: { primary: "#e0f7fa", secondary: "#ffffff", glow: "rgba(255, 255, 255, 0.3)", bg: "#030508", matrixBg: "rgba(3, 5, 8, 0.15)" }
+        };
+ 
+        const currentTheme = THEMES[CONFIG.theme] || THEMES.pink;
+        document.documentElement.style.setProperty('--primary-color', currentTheme.primary);
+        document.documentElement.style.setProperty('--secondary-color', currentTheme.secondary);
+        document.documentElement.style.setProperty('--glow-color', currentTheme.glow);
+        document.documentElement.style.setProperty('--bg-color', currentTheme.bg);
+        
+        const metaTheme = document.getElementById('meta-theme-color');
+        if (metaTheme) metaTheme.setAttribute('content', currentTheme.bg);
+ 
+        document.getElementById('badge-text').innerText = CONFIG.badgeText;
+        document.getElementById('badge-wrapper').style.borderColor = currentTheme.secondary + '60';
+        document.getElementById('badge-text').style.color = currentTheme.secondary;
+ 
+        document.getElementById('names-heading').innerHTML = `${CONFIG.firstName} <span class="text-white text-2xl sm:text-3xl md:text-6xl">&</span> ${CONFIG.secondName}`;
+        document.getElementById('subtitle-text').innerText = CONFIG.subtitleText;
+        document.getElementById('box-title').innerText = CONFIG.boxTitle;
+        document.getElementById('start-date-text').innerText = CONFIG.startDateLabel;
+        document.getElementById('quote-text').innerText = `"${CONFIG.quoteText}"`;
+        document.getElementById('footer-text').innerText = CONFIG.footerText;
+ 
+        document.getElementById('glow-corner-1').style.backgroundColor = currentTheme.primary;
+        document.getElementById('glow-corner-2').style.backgroundColor = currentTheme.primary;
+ 
+        function enableFullScreen() {
+            const docEl = document.documentElement;
+            if (docEl.requestFullscreen) {
+                docEl.requestFullscreen().catch(() => {});
+            } else if (docEl.webkitRequestFullscreen) {
+                docEl.webkitRequestFullscreen();
+            } else if (docEl.msRequestFullscreen) {
+                docEl.msRequestFullscreen();
+            }
+            window.removeEventListener('touchstart', enableFullScreen);
+            window.removeEventListener('click', enableFullScreen);
+        }
+ 
+        window.addEventListener('touchstart', enableFullScreen, { once: true });
+        window.addEventListener('click', enableFullScreen, { once: true });
+ 
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+ 
+        function resizeCanvas_fn() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas_fn);
+        resizeCanvas_fn();
+ 
+        const cleanFirstName = CONFIG.firstName.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        const cleanSecondName = CONFIG.secondName.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        const characters = `0123456789${cleanFirstName}${cleanSecondName}TIMEINHEART<3`;
+        const fontSize = 16;
+        let columns = Math
